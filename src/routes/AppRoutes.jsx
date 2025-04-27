@@ -23,6 +23,10 @@ import ExpedienteList from '../pages/expedientes/ExpedienteList';
 import ExpedienteCreate from '../pages/expedientes/ExpedienteCreate'; 
 import ExpedienteEdit from '../pages/expedientes/ExpedienteEdit'; 
 
+// CRUD de Abogados (Nuevo)
+import AbogadoList from '../pages/abogados/AbogadoList.jsx';
+import AbogadoCreate from '../pages/abogados/AbogadoCreate.jsx';
+import AbogadoEdit from '../pages/abogados/AbogadoEdit.jsx';
 
 function AppRoutes() {
   return (
@@ -57,9 +61,13 @@ function LayoutWrapper() {
         <Route path="/expedientes/list" element={<ExpedienteList />} />
         <Route path="/expedientes/create" element={<ExpedienteCreate />} />
         <Route path="/expedientes/edit/:id" element={<ExpedienteEdit />} />
- 
+
+        {/* Rutas para el CRUD de Abogados (Nuevo) */}
+        <Route path="/abogados/list" element={<AbogadoList />} />
+        <Route path="/abogados/create" element={<AbogadoCreate />} />
+        <Route path="/abogados/edit/:id" element={<AbogadoEdit />} />
+
       </Routes>
-    
     </>
   );
 }

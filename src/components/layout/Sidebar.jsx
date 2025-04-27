@@ -29,6 +29,15 @@ function Sidebar() {
           </ul>
         </li>
 
+        {/* Enlace a Abogados */}
+        <li>
+          <Link to="/abogados" className="hover:text-gray-300">Abogados</Link>
+          <ul className="pl-4 space-y-2">
+            <li><Link to="/abogados/list" className="hover:text-gray-300">Lista de Abogados</Link></li>
+            <li><Link to="/abogados/create" className="hover:text-gray-300">Crear Abogado</Link></li>
+          </ul>
+        </li>
+
       </ul>
     </div>
   );
