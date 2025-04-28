@@ -38,6 +38,16 @@ function Sidebar() {
           </ul>
         </li>
 
+          {/* Enlace a Jueces */}
+          <li>
+          <Link to="/jueces" className="hover:text-gray-300">Jueces</Link>
+          <ul className="pl-4 space-y-2">
+            <li><Link to="/jueces/list" className="hover:text-gray-300">Lista de Jueces</Link></li>
+            <li><Link to="/jueces/create" className="hover:text-gray-300">Crear Jueces</Link></li>
+          </ul>
+        </li>
+
+
       </ul>
     </div>
   );

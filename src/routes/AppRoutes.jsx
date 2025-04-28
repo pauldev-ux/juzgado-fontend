@@ -28,6 +28,11 @@ import AbogadoList from '../pages/abogados/AbogadoList.jsx';
 import AbogadoCreate from '../pages/abogados/AbogadoCreate.jsx';
 import AbogadoEdit from '../pages/abogados/AbogadoEdit.jsx';
 
+// CRUD de Jueces (Nuevo)
+import JuecesList from '../pages/jueces/JuecesList.jsx'; // Ruta para listar jueces
+import JuecesCreate from '../pages/jueces/JuecesCreate.jsx'; // Ruta para crear jueces
+import JuecesEdit from '../pages/jueces/JuecesEdit.jsx'; // Ruta para editar jueces
+
 function AppRoutes() {
   return (
     <BrowserRouter>
@@ -66,6 +71,12 @@ function LayoutWrapper() {
         <Route path="/abogados/list" element={<AbogadoList />} />
         <Route path="/abogados/create" element={<AbogadoCreate />} />
         <Route path="/abogados/edit/:id" element={<AbogadoEdit />} />
+
+        {/* Rutas para el CRUD de Jueces */}
+        <Route path="/jueces/list" element={<JuecesList />} />  
+        <Route path="/jueces/create" element={<JuecesCreate />} /> 
+        <Route path="/jueces/edit/:id" element={<JuecesEdit />} /> 
+
 
       </Routes>
     </>
