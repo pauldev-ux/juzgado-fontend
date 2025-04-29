@@ -11,7 +11,8 @@ export default api;
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_API_URL  // en lugar de la URL fija
+  baseURL: import.meta.env.VITE_API_URL,
+  withCredentials: true,     // <— activa envío de cookies
 });
 
 export default API;
