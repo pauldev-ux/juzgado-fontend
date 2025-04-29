@@ -2,44 +2,44 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-function ClientList() {
-  const [clients, setClients] = useState([]);
+function JuezList() {
+  const [jueces, setJueces] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchJueces = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/clientes/');
-        setClients(response.data);
+        const response = await axios.get('http://localhost:3001/api/jueces/');
+        setJueces(response.data);
       } catch (err) {
-        setError('Error al cargar los clientes');
+        setError('Error al cargar los jueces');
         console.error(err);
       }
     };
 
-    fetchClients();
+    fetchJueces();
   }, []);
 
-  const handleDelete = async (clientId) => {
+  const handleDelete = async (juezId) => {
     try {
-      const response = await axios.delete(`http://localhost:3001/api/clientes/delete/${clientId}`);
+      const response = await axios.delete(`http://localhost:3001/api/jueces/delete/${juezId}`);
       if (response.status === 200) {
-        setClients(clients.filter((client) => client.id !== clientId));
+        setJueces(jueces.filter((juez) => juez.id !== juezId));
       }
     } catch (err) {
-      setError(`Error al eliminar el cliente: ${err.response ? err.response.data.mensaje : err.message}`);
+      setError(`Error al eliminar el juez: ${err.response ? err.response.data.mensaje : err.message}`);
       console.error(err);
     }
   };
 
-  const filteredClients = clients.filter((client) =>
-    client.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredJueces = jueces.filter((juez) =>
+    juez.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
     <div className="p-6">
-      <h1 className="text-3xl font-semibold text-gray-800 mb-6">Lista de Clientes</h1>
+      <h1 className="text-3xl font-semibold text-gray-800 mb-6">Lista de Jueces</h1>
       {error && <div className="bg-red-200 text-red-800 p-2 mb-4">{error}</div>}
 
       <div className="mb-4">
@@ -64,17 +64,17 @@ function ClientList() {
           </tr>
         </thead>
         <tbody>
-          {filteredClients.map((client) => (
-            <tr key={client.id}>
-              <td className="px-4 py-2 border">{client.id}</td>
-              <td className="px-4 py-2 border">{client.nombre}</td>
-              <td className="px-4 py-2 border">{client.apellido}</td>
-              <td className="px-4 py-2 border">{client.carnet_identidad}</td>
-              <td className="px-4 py-2 border">{client.email}</td>
+          {filteredJueces.map((juez) => (
+            <tr key={juez.id}>
+              <td className="px-4 py-2 border">{juez.id}</td>
+              <td className="px-4 py-2 border">{juez.nombre}</td>
+              <td className="px-4 py-2 border">{juez.apellido}</td>
+              <td className="px-4 py-2 border">{juez.carnet_identidad}</td>
+              <td className="px-4 py-2 border">{juez.email}</td>
               <td className="px-4 py-2 border">
-                <Link to={`/clientes/edit/${client.id}`} className="text-blue-500 hover:text-blue-700">Editar</Link>
+                <Link to={`/jueces/edit/${juez.id}`} className="text-blue-500 hover:text-blue-700">Editar</Link>
                 <button
-                  onClick={() => handleDelete(client.id)}
+                  onClick={() => handleDelete(juez.id)}
                   className="text-red-500 hover:text-red-700 ml-4"
                 >
                   Eliminar
@@ -88,4 +88,4 @@ function ClientList() {
   );
 }
 
-export default ClientList;
+export default JuezList;

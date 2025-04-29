@@ -4,6 +4,7 @@ import axios from 'axios';
 
 function AbogadoList() {
   const [abogados, setAbogados] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -32,10 +33,25 @@ function AbogadoList() {
     }
   };
 
+  const filteredAbogados = abogados.filter((abogado) =>
+    abogado.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-6">
       <h1 className="text-3xl font-semibold text-gray-800 mb-6">Lista de Abogados</h1>
       {error && <div className="bg-red-200 text-red-800 p-2 mb-4">{error}</div>}
+
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          className="w-full p-2 border rounded-md"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+
       <table className="w-full table-auto border-collapse">
         <thead>
           <tr>
@@ -48,7 +64,7 @@ function AbogadoList() {
           </tr>
         </thead>
         <tbody>
-          {abogados.map((abogado) => (
+          {filteredAbogados.map((abogado) => (
             <tr key={abogado.id}>
               <td className="px-4 py-2 border">{abogado.id}</td>
               <td className="px-4 py-2 border">{abogado.nombre}</td>

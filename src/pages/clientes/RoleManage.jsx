@@ -51,7 +51,8 @@ function RoleManage() {
           >
             <option value="cliente">Cliente</option>
             <option value="admin">Admin</option>
-            <option value="abogado">Abogado</option> {/* 🚀 Nueva opción añadida aquí */}
+            <option value="abogado">Abogado</option> 
+            <option value="juez">Juez</option> 
           </select>
         </div>
         <button type="submit" className="w-full bg-blue-600 text-white p-3 rounded-md">

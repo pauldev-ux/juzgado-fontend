@@ -11,21 +11,21 @@ function Sidebar() {
       <ul className="space-y-4">
         <li><Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
 
+       {/* Enlace a Expedientes */}
+       <li>
+          <Link to="/expedientes" className="hover:text-gray-300">Expedientes</Link>
+          <ul className="pl-4 space-y-2">
+            <li><Link to="/expedientes/list" className="hover:text-gray-300">Lista de Expedientes</Link></li>
+            <li><Link to="/expedientes/create" className="hover:text-gray-300">Crear Expediente</Link></li>
+          </ul>
+        </li>
+
         {/* Enlace a Clientes */}
         <li>
           <Link to="/clientes" className="hover:text-gray-300">Clientes</Link>
           <ul className="pl-4 space-y-2">
             <li><Link to="/clientes/list" className="hover:text-gray-300">Lista de Clientes</Link></li>
             <li><Link to="/clientes/create" className="hover:text-gray-300">Crear Cliente</Link></li>
-          </ul>
-        </li>
-
-        {/* Enlace a Expedientes */}
-        <li>
-          <Link to="/expedientes" className="hover:text-gray-300">Expedientes</Link>
-          <ul className="pl-4 space-y-2">
-            <li><Link to="/expedientes/list" className="hover:text-gray-300">Lista de Expedientes</Link></li>
-            <li><Link to="/expedientes/create" className="hover:text-gray-300">Crear Expediente</Link></li>
           </ul>
         </li>
 
@@ -37,6 +37,16 @@ function Sidebar() {
             <li><Link to="/abogados/create" className="hover:text-gray-300">Crear Abogado</Link></li>
           </ul>
         </li>
+
+        {/* Enlace a Jueces */}
+          <li>
+          <Link to="/jueces" className="hover:text-gray-300">Jueces</Link>
+          <ul className="pl-4 space-y-2">
+            <li><Link to="/jueces/list" className="hover:text-gray-300">Lista de Jueces</Link></li>
+            <li><Link to="/jueces/create" className="hover:text-gray-300">Crear Jueces</Link></li>
+          </ul>
+        </li>
+
 
       </ul>
     </div>
