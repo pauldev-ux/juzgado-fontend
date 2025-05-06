@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const [email, setEmail] = useState('');  // Usamos email en lugar de username
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -12,18 +12,19 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login/', {
-        email,  // Enviamos el email en lugar de username
+      const response = await axios.post('http://localhost:3001/api/auth/login', {
+        email,
         password,
       });
+
       setMessage('Usuario autenticado correctamente');
-      console.log(response.data);
-      
-      // Almacenamos el token en el LocalStorage
-      localStorage.setItem('token', response.data.token);
-      
-      // Redirigir al dashboard después de un login exitoso
-      navigate('/dashboard');
+      const { token, usuario, redirect } = response.data;
+
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(usuario));
+
+
+      navigate(redirect); // redirige según el tipo de usuario
     } catch (err) {
       setError('Credenciales inválidas');
       console.error(err);
@@ -41,7 +42,6 @@ function Login() {
           <input
             type="email"
             id="email"
-            name="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -53,7 +53,6 @@ function Login() {
           <input
             type="password"
             id="password"
-            name="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required

@@ -9,7 +9,7 @@ function Sidebar() {
         <Link to="/" className="text-white hover:text-gray-300">Menu principal</Link>
       </div>
       <ul className="space-y-4">
-        <li><Link to="/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
+        <li><Link to="/admin/dashboard" className="hover:text-gray-300">Dashboard</Link></li>
 
        {/* Enlace a Expedientes */}
        <li>

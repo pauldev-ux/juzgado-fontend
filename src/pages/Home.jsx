@@ -16,13 +16,13 @@ function Home() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Header */}
-      <Header />
+      {/* Header 
+      <Header />*/}
 
       {/* Wrapper con Sidebar */}
       <div className="flex flex-1">
-        {/* Sidebar */}
-        <Sidebar />
+        {/* Sidebar 
+        <Sidebar />*/}
         
         {/* Main content */}
         <main className="flex-1 bg-gray-100 p-8">

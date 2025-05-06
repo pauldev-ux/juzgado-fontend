@@ -17,10 +17,13 @@ function Header() {
     <header className="bg-gray-800 text-white py-4">
       <div className="max-w-screen-xl mx-auto px-4 flex justify-between items-center">
         <div className="header-logo text-2xl font-semibold">
-          {/* Aquí agregamos el Link para redirigir al dashboard */}
-          <Link to="/dashboard" className="text-white hover:text-gray-300">
+          {/* Aquí agregamos el Link para redirigir al dashboard 
+          <Link to="/" className="text-white hover:text-gray-300">
             Juzgado Santa Cruz
           </Link>
+          */}
+            Juzgado Santa Cruz
+          
         </div>
         <nav className="header-nav space-x-6">
           <Link to="/features" className="hover:text-gray-300">Características</Link>
