@@ -18,9 +18,9 @@ function Sidebar() {
   const [expandedDropdowns, setExpandedDropdowns] = useState({});
 
   return (
-    // Contenedor principal del sidebar con animación de anchura
+    // 🆕 Contenedor principal con transición de color basada en el modo oscuro
     <div
-      className={`bg-gray-900 text-white h-screen transition-all duration-150 ease-in-out ${
+      className={`bg-blue-700 dark:bg-gray-900 text-white h-screen transition-all duration-150 ease-in-out ${
         isOpen ? 'w-64' : 'w-20'
       } fixed top-0 left-0 z-40 shadow-lg`}
     >
@@ -138,7 +138,7 @@ function Sidebar() {
   );
 }
 
-// 🔁 Enlace simple reutilizable
+// 🔁 Enlace simple reutilizable con colores adaptados a modo claro/oscuro
 function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
   const handleClick = () => {
     if (!isOpen) {
@@ -150,7 +150,7 @@ function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
     <Link
       to={to}
       onClick={handleClick}
-      className="flex items-center space-x-3 px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+      className="flex items-center space-x-3 px-4 py-2 rounded hover:bg-blue-800 dark:hover:bg-gray-800 transition-colors"
     >
       {icon}
       {isOpen && <span>{label}</span>}
@@ -158,7 +158,7 @@ function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
   );
 }
 
-// 🔁 Componente para submenús desplegables
+// 🔁 Componente para submenús desplegables con colores adaptados
 function SidebarDropdown({
   label,
   icon,
@@ -188,7 +188,7 @@ function SidebarDropdown({
       <button
         onClick={handleExpand}
         type="button"
-        className="flex items-center w-full space-x-3 px-4 py-2 rounded hover:bg-gray-800 transition-colors focus:outline-none"
+        className="flex items-center w-full space-x-3 px-4 py-2 rounded hover:bg-blue-800 dark:hover:bg-gray-800 transition-colors focus:outline-none"
       >
         {icon}
         {isOpen && <span className="flex-1 text-left">{label}</span>}

@@ -7,9 +7,13 @@ import {
   EnvelopeIcon,
   LockClosedIcon,
   UserGroupIcon,
+  IdentificationIcon, // 🆕 Ícono decorativo superior
 } from '@heroicons/react/24/outline';
+import { useNavigate } from 'react-router-dom';
 
 function Register() {
+  const navigate = useNavigate();
+
   // 🧠 Estados para campos del formulario
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -45,27 +49,37 @@ function Register() {
     }
   };
 
+  // 🆕 Redirige al login
+  const handleRedirectToLogin = () => {
+    navigate('/login');
+  };
+
   return (
-    // 🎯 Fondo claro y formulario centrado
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
-      {/* 🧱 Contenedor del formulario */}
-      <div className="w-full max-w-md bg-white shadow-xl rounded-lg p-8">
+    // 🎯 Fondo claro y formulario centrado (modo oscuro compatible)
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
+      {/* 🧱 Contenedor del formulario (modo claro/oscuro) */}
+      <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-lg pt-6 pb-8 px-8">
+
+        {/* 🆕 Ícono decorativo arriba del título */}
+        <div className="flex justify-center mb-2 -mt-1">
+          <IdentificationIcon className="h-12 w-12 text-blue-600 dark:text-blue-400" />
+        </div>
 
         {/* 🏷️ Título del formulario */}
-        <h2 className="text-3xl font-semibold text-center text-gray-800 mb-6">
+        <h2 className="text-3xl font-semibold text-center text-gray-800 dark:text-gray-100 mb-6">
           Registrar Usuario
         </h2>
 
         {/* ⚠️ Mensaje de error */}
         {error && (
-          <div className="bg-red-100 text-red-700 border border-red-400 px-4 py-2 mb-4 rounded">
+          <div className="bg-red-100 dark:bg-red-200 text-red-700 border border-red-400 px-4 py-2 mb-4 rounded">
             {error}
           </div>
         )}
 
         {/* ✅ Mensaje de éxito */}
         {message && (
-          <div className="bg-green-100 text-green-700 border border-green-400 px-4 py-2 mb-4 rounded">
+          <div className="bg-green-100 dark:bg-green-200 text-green-700 border border-green-400 px-4 py-2 mb-4 rounded">
             {message}
           </div>
         )}
@@ -75,13 +89,13 @@ function Register() {
 
           {/* 👤 Nombre de Usuario */}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Nombre de Usuario
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {/* 🔵 Ícono azul */}
-                <UserIcon className="h-5 w-5 text-blue-600" />
+                <UserIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </span>
               <input
                 type="text"
@@ -89,7 +103,7 @@ function Register() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="Tu nombre de usuario"
               />
             </div>
@@ -97,13 +111,13 @@ function Register() {
 
           {/* 📧 Correo Electrónico */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Correo Electrónico
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {/* 🔵 Ícono azul */}
-                <EnvelopeIcon className="h-5 w-5 text-blue-600" />
+                <EnvelopeIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               </span>
               <input
                 type="email"
@@ -111,7 +125,7 @@ function Register() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="correo@ejemplo.com"
               />
             </div>
@@ -119,13 +133,13 @@ function Register() {
 
           {/* 🔐 Contraseña */}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Contraseña
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {/* 🔵 Ícono azul */}
-                <LockClosedIcon className="h-5 w-5 text-blue-700" />
+                <LockClosedIcon className="h-5 w-5 text-blue-700 dark:text-blue-400" />
               </span>
               <input
                 type="password"
@@ -133,7 +147,7 @@ function Register() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="********"
               />
             </div>
@@ -141,19 +155,19 @@ function Register() {
 
           {/* 🧾 Rol (Select) */}
           <div>
-            <label htmlFor="role_name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="role_name" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Rol
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 {/* 🔵 Ícono azul oscuro */}
-                <UserGroupIcon className="h-5 w-5 text-blue-700" />
+                <UserGroupIcon className="h-5 w-5 text-blue-700 dark:text-blue-400" />
               </span>
               <select
                 id="role_name"
                 value={roleName}
                 onChange={(e) => setRoleName(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="cliente">Cliente</option>
                 <option value="admin">Admin</option>
@@ -168,6 +182,18 @@ function Register() {
           >
             Registrar
           </button>
+
+          {/* 🆕 Botón para redirigir al login */}
+          <div className="text-center mt-4">
+            <span className="text-sm text-gray-600 dark:text-gray-400">¿Ya tienes una cuenta?</span>
+            <button
+              type="button"
+              onClick={handleRedirectToLogin}
+              className="ml-2 text-blue-600 hover:underline text-sm font-medium"
+            >
+              Iniciar sesión
+            </button>
+          </div>
         </form>
       </div>
     </div>

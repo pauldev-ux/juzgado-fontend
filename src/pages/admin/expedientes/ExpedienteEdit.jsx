@@ -1,18 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
-
-// Heroicons para una interfaz más visual
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   UserIcon,
-  ScaleIcon,
-  DocumentTextIcon,
-  PencilSquareIcon,
   IdentificationIcon,
+  PencilSquareIcon,
+  ArrowLeftCircleIcon,
 } from '@heroicons/react/24/outline';
 
 function ExpedienteEdit() {
-  // Estados para los datos del expediente
   const [demandanteCarnet, setDemandanteCarnet] = useState('');
   const [demandadoCarnet, setDemandadoCarnet] = useState('');
   const [abogadoDemandanteCarnet, setAbogadoDemandanteCarnet] = useState('');
@@ -20,19 +16,30 @@ function ExpedienteEdit() {
   const [juezCarnet, setJuezCarnet] = useState('');
   const [contenido, setContenido] = useState('');
 
-  // Listas de opciones
   const [clientes, setClientes] = useState([]);
   const [abogados, setAbogados] = useState([]);
   const [jueces, setJueces] = useState([]);
 
-  const { id } = useParams(); // ID del expediente a editar
-  const navigate = useNavigate(); // Para redireccionar luego
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  // Obtener datos del expediente actual
+  // Cargar listas y expediente en orden
   useEffect(() => {
-    const fetchExpediente = async () => {
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/expedientes/${id}`);
+        // Cargar listas de selección
+        const [clientesRes, abogadosRes, juecesRes] = await Promise.all([
+          axios.get('http://localhost:3001/api/clientes/'),
+          axios.get('http://localhost:3001/api/abogados/'),
+          axios.get('http://localhost:3001/api/jueces/'),
+        ]);
+
+        setClientes(clientesRes.data);
+        setAbogados(abogadosRes.data);
+        setJueces(juecesRes.data);
+
+        // Luego cargar el expediente
+        const expedienteRes = await axios.get(`http://localhost:3001/api/expedientes/${id}`);
         const {
           demandante_carnet,
           demandado_carnet,
@@ -40,46 +47,24 @@ function ExpedienteEdit() {
           abogado_demandado_carnet,
           juez_carnet,
           contenido,
-        } = response.data;
+        } = expedienteRes.data;
 
-        // Setear datos en el formulario
-        setDemandanteCarnet(demandante_carnet);
-        setDemandadoCarnet(demandado_carnet);
-        setAbogadoDemandanteCarnet(abogado_demandante_carnet);
-        setAbogadoDemandadoCarnet(abogado_demandado_carnet);
-        setJuezCarnet(juez_carnet);
+        // Asegurar que sean strings para que coincidan con los <option value="">
+        setDemandanteCarnet(String(demandante_carnet));
+        setDemandadoCarnet(String(demandado_carnet));
+        setAbogadoDemandanteCarnet(String(abogado_demandante_carnet));
+        setAbogadoDemandadoCarnet(String(abogado_demandado_carnet));
+        setJuezCarnet(String(juez_carnet));
         setContenido(contenido);
       } catch (err) {
-        console.error('Error al cargar los datos del expediente', err);
-      }
-    };
-
-    fetchExpediente();
-  }, [id]);
-
-  // Obtener listas para los selects
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [clientesRes, abogadosRes, juecesRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/clientes/'),
-          axios.get('http://localhost:3001/api/abogados/'),
-          axios.get('http://localhost:3001/api/jueces/'),
-        ]);
-
-        // Guardar datos para mostrar en select
-        setClientes(clientesRes.data);
-        setAbogados(abogadosRes.data);
-        setJueces(juecesRes.data);
-      } catch (err) {
-        console.error('Error al cargar listas de selección', err);
+        console.error('Error al cargar datos del expediente o listas', err);
       }
     };
 
     fetchData();
-  }, []);
+  }, [id]);
 
-  // Enviar formulario actualizado
+  // Guardar cambios
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -91,150 +76,181 @@ function ExpedienteEdit() {
         juez_carnet: juezCarnet,
         contenido,
       });
-      navigate('/expedientes'); // Redirigir tras guardar
+      navigate('/expedientes/list'); // Redirige correctamente después de guardar
     } catch (err) {
       console.error('Error al actualizar expediente', err);
     }
   };
 
+  const handleGoBack = () => {
+    navigate('/admin/dashboard');
+  };
+
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
-      <div className="w-full max-w-3xl bg-white rounded-2xl shadow-lg p-8">
-        {/* Título */}
-        <h1 className="text-3xl font-bold text-center text-blue-700 mb-8 flex items-center justify-center gap-2">
-          <PencilSquareIcon className="h-8 w-8 text-blue-600" />
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
+      <div className="w-full max-w-3xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-2xl shadow-lg p-8">
+
+        <div className="mb-4">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition"
+          >
+            <ArrowLeftCircleIcon className="h-6 w-6" />
+            Regresar al Dashboard
+          </button>
+        </div>
+
+        <h1 className="text-3xl font-bold text-center text-blue-700 dark:text-blue-400 mb-8 flex items-center justify-center gap-2">
+          <PencilSquareIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           Editar Expediente
         </h1>
 
-        {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Select: Demandante */}
+
+          {/* Demandante */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <UserIcon className="h-5 w-5 mr-2 text-blue-500" />
+            <label className="flex items-center text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              <UserIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
               Demandante
             </label>
             <select
               value={demandanteCarnet}
               onChange={(e) => setDemandanteCarnet(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
               required
             >
               <option value="">Seleccione un cliente</option>
-              {clientes.map((c) => (
-                <option key={c.carnet_identidad} value={c.carnet_identidad}>
-                  {c.nombre} {c.apellido} ({c.carnet_identidad})
+              {clientes.map((cliente) => (
+                <option
+                  key={cliente.carnet_identidad}
+                  value={String(cliente.carnet_identidad)}
+                >
+                  {cliente.nombre} {cliente.apellido} ({cliente.carnet_identidad})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Select: Demandado */}
+          {/* Demandado */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <UserIcon className="h-5 w-5 mr-2 text-blue-500" />
+            <label className="flex items-center text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              <UserIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
               Demandado
             </label>
             <select
               value={demandadoCarnet}
               onChange={(e) => setDemandadoCarnet(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
               required
             >
               <option value="">Seleccione un cliente</option>
-              {clientes.map((c) => (
-                <option key={c.carnet_identidad} value={c.carnet_identidad}>
-                  {c.nombre} {c.apellido} ({c.carnet_identidad})
+              {clientes.map((cliente) => (
+                <option
+                  key={cliente.carnet_identidad}
+                  value={String(cliente.carnet_identidad)}
+                >
+                  {cliente.nombre} {cliente.apellido} ({cliente.carnet_identidad})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Select: Abogado del Demandante */}
+          {/* Abogado del Demandante */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500" />
+            <label className="flex items-center text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
               Abogado del Demandante
             </label>
             <select
               value={abogadoDemandanteCarnet}
               onChange={(e) => setAbogadoDemandanteCarnet(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
               required
             >
               <option value="">Seleccione un abogado</option>
-              {abogados.map((a) => (
-                <option key={a.carnet_identidad} value={a.carnet_identidad}>
-                  {a.nombre} {a.apellido} ({a.carnet_identidad})
+              {abogados.map((abogado) => (
+                <option
+                  key={abogado.carnet_identidad}
+                  value={String(abogado.carnet_identidad)}
+                >
+                  {abogado.nombre} {abogado.apellido} ({abogado.carnet_identidad})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Select: Abogado del Demandado */}
+          {/* Abogado del Demandado */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500" />
+            <label className="flex items-center text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
               Abogado del Demandado
             </label>
             <select
               value={abogadoDemandadoCarnet}
               onChange={(e) => setAbogadoDemandadoCarnet(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
               required
             >
               <option value="">Seleccione un abogado</option>
-              {abogados.map((a) => (
-                <option key={a.carnet_identidad} value={a.carnet_identidad}>
-                  {a.nombre} {a.apellido} ({a.carnet_identidad})
+              {abogados.map((abogado) => (
+                <option
+                  key={abogado.carnet_identidad}
+                  value={String(abogado.carnet_identidad)}
+                >
+                  {abogado.nombre} {abogado.apellido} ({abogado.carnet_identidad})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Select: Juez */}
+          {/* Juez */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <ScaleIcon className="h-5 w-5 mr-2 text-blue-500" />
+            <label className="flex items-center text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">
+              <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
               Juez
             </label>
             <select
               value={juezCarnet}
               onChange={(e) => setJuezCarnet(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg"
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
               required
             >
               <option value="">Seleccione un juez</option>
-              {jueces.map((j) => (
-                <option key={j.carnet_identidad} value={j.carnet_identidad}>
-                  {j.nombre} {j.apellido} ({j.carnet_identidad})
+              {jueces.map((juez) => (
+                <option
+                  key={juez.carnet_identidad}
+                  value={String(juez.carnet_identidad)}
+                >
+                  {juez.nombre} {juez.apellido} ({juez.carnet_identidad})
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Campo: Contenido del expediente */}
+          {/* Contenido */}
           <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 mb-1">
-              <DocumentTextIcon className="h-5 w-5 mr-2 text-blue-500" />
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Contenido del Expediente
             </label>
             <textarea
               value={contenido}
               onChange={(e) => setContenido(e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-lg h-40 resize-none"
+              rows={4}
+              className="w-full p-3 border border-gray-300 rounded-lg bg-white dark:bg-gray-700 dark:text-white"
               required
-            />
+            ></textarea>
           </div>
 
-          {/* Botón de enviar */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold flex items-center justify-center gap-2 transition"
-          >
-            <PencilSquareIcon className="h-5 w-5" />
-            Guardar Cambios
-          </button>
+          {/* Botón guardar */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition"
+            >
+              Guardar cambios
+            </button>
+          </div>
         </form>
       </div>
     </div>
