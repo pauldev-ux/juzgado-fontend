@@ -8,23 +8,22 @@ import {
   UsersIcon,
   BriefcaseIcon,
   ScaleIcon,
+  CalendarDaysIcon,
+  ClipboardDocumentListIcon,
+  PuzzlePieceIcon
 } from '@heroicons/react/24/outline';
 
 function Sidebar() {
-  // Estado para controlar si el sidebar está expandido o colapsado
   const [isOpen, setIsOpen] = useState(true);
-
-  // Estado global para controlar qué submenús están abiertos
   const [expandedDropdowns, setExpandedDropdowns] = useState({});
 
   return (
-    // Contenedor principal del sidebar con animación de anchura
     <div
-      className={`bg-gray-900 text-white h-screen transition-all duration-150 ease-in-out ${
+      className={`bg-blue-700 dark:bg-gray-900 text-white h-screen transition-all duration-150 ease-in-out ${
         isOpen ? 'w-64' : 'w-20'
       } fixed top-0 left-0 z-40 shadow-lg`}
     >
-      {/* 🔄 Botón hamburguesa animado con efecto de escala al hacer hover */}
+      {/* Botón hamburguesa */}
       <div className="flex justify-end p-4 md:justify-between">
         <button
           onClick={() => {
@@ -34,41 +33,20 @@ function Sidebar() {
           type="button"
           className="relative w-8 h-6 flex flex-col justify-between items-center group focus:outline-none hover:scale-110 transition-transform duration-200"
         >
-          {/* Línea superior */}
-          <span
-            className={`w-6 h-0.5 bg-white transform transition duration-300 ease-in-out ${
-              isOpen ? 'rotate-45 translate-y-2' : ''
-            }`}
-          />
-          {/* Línea del medio */}
-          <span
-            className={`w-6 h-0.5 bg-white transition duration-300 ease-in-out ${
-              isOpen ? 'opacity-0' : ''
-            }`}
-          />
-          {/* Línea inferior */}
-          <span
-            className={`w-6 h-0.5 bg-white transform transition duration-300 ease-in-out ${
-              isOpen ? '-rotate-45 -translate-y-2' : ''
-            }`}
-          />
+          <span className={`w-6 h-0.5 bg-white transform transition duration-300 ${isOpen ? 'rotate-45 translate-y-2' : ''}`} />
+          <span className={`w-6 h-0.5 bg-white transition duration-300 ${isOpen ? 'opacity-0' : ''}`} />
+          <span className={`w-6 h-0.5 bg-white transform transition duration-300 ${isOpen ? '-rotate-45 -translate-y-2' : ''}`} />
         </button>
       </div>
 
-      {/* Título o logo del sidebar */}
+      {/* Título */}
       <div className="px-6 h-8 mb-6 flex items-center">
-        <span
-          className={`text-xl font-bold transform transition-all duration-200 ease-in-out ${
-            isOpen
-              ? 'opacity-100 translate-x-0'
-              : 'opacity-0 -translate-x-2 pointer-events-none select-none'
-          }`}
-        >
+        <span className={`text-xl font-bold transform transition-all duration-200 ease-in-out ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none select-none'}`}>
           <Link to="/">Juzgado SC</Link>
         </span>
       </div>
 
-      {/* Navegación principal */}
+      {/* Navegación */}
       <nav className="px-2 space-y-4">
         <SidebarLink
           to="/admin/dashboard"
@@ -78,6 +56,7 @@ function Sidebar() {
           setIsOpen={setIsOpen}
         />
 
+        {/* Expedientes */}
         <SidebarDropdown
           label="Expedientes"
           icon={<FolderIcon className="h-5 w-5" />}
@@ -89,9 +68,12 @@ function Sidebar() {
           links={[
             { to: '/expedientes/list', label: 'Lista de Expedientes' },
             { to: '/expedientes/create', label: 'Crear Expediente' },
+            { to: '/expedientes/seguimiento', label: 'Seguimiento de Expedientes' },
+            { to: '/expedientes/partes', label: 'Partes del Proceso' },
           ]}
         />
 
+        {/* Clientes */}
         <SidebarDropdown
           label="Clientes"
           icon={<UsersIcon className="h-5 w-5" />}
@@ -106,6 +88,7 @@ function Sidebar() {
           ]}
         />
 
+        {/* Abogados */}
         <SidebarDropdown
           label="Abogados"
           icon={<BriefcaseIcon className="h-5 w-5" />}
@@ -120,6 +103,7 @@ function Sidebar() {
           ]}
         />
 
+        {/* Jueces */}
         <SidebarDropdown
           label="Jueces"
           icon={<ScaleIcon className="h-5 w-5" />}
@@ -133,24 +117,40 @@ function Sidebar() {
             { to: '/jueces/create', label: 'Crear Juez' },
           ]}
         />
+
+        {/* Audiencias */}
+        <SidebarDropdown
+          label="Audiencias"
+          icon={<CalendarDaysIcon className="h-5 w-5" />}
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          id="audiencias"
+          expandedDropdowns={expandedDropdowns}
+          setExpandedDropdowns={setExpandedDropdowns}
+          links={[
+            { to: '/audiencias/list', label: 'Lista de Audiencias' },
+            { to: '/audiencias/create', label: 'Crear Audiencia' },
+            { to: '/audiencias/calendario', label: 'Calendario de Audiencias' },
+            { to: '/audiencias/resolver', label: 'Resolver Audiencia' },
+            { to: '/audiencias/observaciones', label: 'Observaciones' },
+          ]}
+        />
       </nav>
     </div>
   );
 }
 
-// 🔁 Enlace simple reutilizable
+// Enlace directo
 function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
   const handleClick = () => {
-    if (!isOpen) {
-      setIsOpen(true);
-    }
+    if (!isOpen) setIsOpen(true);
   };
 
   return (
     <Link
       to={to}
       onClick={handleClick}
-      className="flex items-center space-x-3 px-4 py-2 rounded hover:bg-gray-800 transition-colors"
+      className="flex items-center space-x-3 px-4 py-2 rounded hover:bg-blue-800 dark:hover:bg-gray-800 transition-colors"
     >
       {icon}
       {isOpen && <span>{label}</span>}
@@ -158,7 +158,7 @@ function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
   );
 }
 
-// 🔁 Componente para submenús desplegables
+// Dropdown con subrutas
 function SidebarDropdown({
   label,
   icon,
@@ -188,7 +188,7 @@ function SidebarDropdown({
       <button
         onClick={handleExpand}
         type="button"
-        className="flex items-center w-full space-x-3 px-4 py-2 rounded hover:bg-gray-800 transition-colors focus:outline-none"
+        className="flex items-center w-full space-x-3 px-4 py-2 rounded hover:bg-blue-800 dark:hover:bg-gray-800 transition-colors focus:outline-none"
       >
         {icon}
         {isOpen && <span className="flex-1 text-left">{label}</span>}

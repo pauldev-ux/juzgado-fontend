@@ -33,10 +33,28 @@ import JuezList from '../pages/admin/jueces/JuezList.jsx';
 import JuezCreate from '../pages/admin/jueces/JuezCreate.jsx';
 import JuezEdit from '../pages/admin/jueces/JuezEdit.jsx';
 
-// cliente: vista
+// Admin: Audiencias
+import AudienciaList from '../pages/admin/audiencias/AudienciaList.jsx';
+import AudienciaCreate from '../pages/admin/audiencias/AudienciaCreate.jsx';
+import AudienciaEdit from '../pages/admin/audiencias/AudienciaEdit.jsx';
+import AudienciaResolver from '../pages/admin/audiencias/AudienciaResolver.jsx';
+import AudienciaObservaciones from '../pages/admin/audiencias/AudienciaObservaciones.jsx';
+import AudienciaCalendario from '../pages/admin/audiencias/AudienciaCalendario.jsx';
+
+
+        // Cliente: vista
 import ClienteDashboard from '../pages/cliente/ClienteDashboard.jsx';
-import AbogadoDashboard from '../pages/abogado/AbogadoDashboard';
+
+        // Juez //
+import JuezLayout from '../components/layout/JuezLayout.jsx';
 import JuezDashboard from '../pages/juez/JuezDashboard';
+
+        //Abogado//
+// Abogado
+import AbogadoDashboard from '../pages/abogado/AbogadoDashboard.jsx';
+import AbogadoLayout from '../components/layout/AbogadoLayout.jsx';
+
+
 
 
 function AppRoutes() {
@@ -87,9 +105,24 @@ function LayoutWrapper() {
         {/* Cliente: vista */}
         <Route path="/cliente/dashboard" element={<ClienteDashboard />} />
         <Route path="/abogado/dashboard" element={<AbogadoDashboard />} />
-        <Route path="/juez/dashboard" element={<JuezDashboard />} />
         
+        {/* Admin: Audiencias */}
+        <Route path="/audiencias/list" element={<AudienciaList />} />
+        <Route path="/audiencias/create" element={<AudienciaCreate />} />
+        <Route path="/audiencias/edit/:id" element={<AudienciaEdit />} />
+        <Route path="/audiencias/resolver" element={<AudienciaResolver />} />
+        <Route path="/audiencias/observaciones" element={<AudienciaObservaciones />} />
+        <Route path="/audiencias/calendario" element={<AudienciaCalendario />} />
 
+        {/* JUEZ: Layout con sidebar y header propios */}
+        <Route path="/juez" element={<JuezLayout />}>
+          <Route path="dashboard" element={<JuezDashboard />} />
+        </Route>
+
+        {/* ABOGADO: Rutas protegidas con layout de abogado */}
+          <Route path="/abogado" element={<AbogadoLayout />}>
+            <Route path="dashboard" element={<AbogadoDashboard />} />
+          </Route>
 
       </Routes>
     </>

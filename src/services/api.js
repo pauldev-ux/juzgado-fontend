@@ -2,7 +2,8 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // Ajusta esta URL a la de tu backend
+  baseURL: 'http://localhost:3000/api', // Ajusta esta URL a la de tu backend
+  withCredentials: true, // si usás JWT o cookies, esto es útil
 });
 
 export default api;

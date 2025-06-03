@@ -1,9 +1,14 @@
-module.exports = {
+export default {
+  darkMode: 'class',
   content: [
-    './src/**/*.{html,js,jsx,ts,tsx}', // Asegúrate de que se esté escaneando todo tu código fuente
+    './src/**/*.{html,js,jsx,ts,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'spin-slow': 'spin 2s linear infinite',
+      },
+    },
   },
   plugins: [],
 };

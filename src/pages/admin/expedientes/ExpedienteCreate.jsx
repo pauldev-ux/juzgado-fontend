@@ -2,16 +2,16 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-// Nuevos íconos agregados para estética visual
+// Iconos de Heroicons
 import {
   UserIcon,
   IdentificationIcon,
   ScaleIcon,
   DocumentTextIcon,
+  ArrowLeftCircleIcon,
 } from '@heroicons/react/24/outline';
 
 function ExpedienteCreate() {
-  // Estados para los campos del formulario
   const [demandanteCarnet, setDemandanteCarnet] = useState('');
   const [demandadoCarnet, setDemandadoCarnet] = useState('');
   const [abogadoDemandanteCarnet, setAbogadoDemandanteCarnet] = useState('');
@@ -22,9 +22,11 @@ function ExpedienteCreate() {
   const [abogados, setAbogados] = useState([]);
   const [jueces, setJueces] = useState([]);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');  // NUEVO: Estado para el mensaje de éxito
+
   const navigate = useNavigate();
 
-  // Cargar datos de clientes, abogados y jueces al montar el componente
+  // Cargar datos para selectores
   useEffect(() => {
     const fetchClientes = async () => {
       try {
@@ -61,11 +63,10 @@ function ExpedienteCreate() {
     fetchJueces();
   }, []);
 
-  // Enviar formulario para crear expediente
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
+      // Enviar datos para crear el expediente
       await axios.post('http://localhost:3001/api/expedientes/', {
         demandante_carnet: demandanteCarnet,
         demandado_carnet: demandadoCarnet,
@@ -75,157 +76,127 @@ function ExpedienteCreate() {
         contenido,
       });
 
-      // NUEVO: Redirige a la lista de expedientes después de crear exitosamente
-      navigate('/expedientes/list');
+      setSuccess('Expediente creado con éxito');  // NUEVO: mensaje de éxito
+      setTimeout(() => {
+        navigate('/expedientes/list');  // Redireccionamiento después de un pequeño retraso
+      }, 2000);  // Retraso de 2 segundos para que el mensaje de éxito sea visible
     } catch (err) {
-      // NUEVO: Mejora la visualización del error
       const mensaje = err.response?.data?.message || 'Error al crear el expediente';
       setError(mensaje);
       console.error(err);
     }
   };
 
-  return (
-    <div className="flex justify-center items-start min-h-screen bg-gray-50 p-4">
-      <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-6">
+  // NUEVO: Función para regresar al dashboard
+  const handleGoBack = () => {
+    navigate('/admin/dashboard');
+  };
 
-        {/* Título con ícono */}
-        <div className="text-center mb-6">
-          <DocumentTextIcon className="h-10 w-10 text-blue-500 mx-auto mb-2" />
-          <h1 className="text-3xl font-bold text-gray-800">Crear Expediente</h1>
+  return (
+    <div className="flex justify-center items-start min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+      <div className="w-full max-w-3xl bg-white dark:bg-gray-800 shadow-md rounded-2xl p-8">
+
+        {/* NUEVO: Botón regresar al Dashboard, estilo uniforme */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition"
+          >
+            <ArrowLeftCircleIcon className="h-6 w-6" />
+            Regresar al Dashboard
+          </button>
         </div>
 
-        {/* Mostrar error si lo hay */}
-        {error && <div className="bg-red-100 text-red-700 p-3 mb-4 rounded">{error}</div>}
+        {/* Título */}
+        <div className="text-center mb-6">
+          <DocumentTextIcon className="h-10 w-10 text-blue-500 mx-auto mb-2" />
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Crear Expediente</h1>
+        </div>
 
+        {/* Mostrar errores */}
+        {error && (
+          <div className="bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 p-3 mb-4 rounded">
+            {error}
+          </div>
+        )}
+
+        {/* Mostrar éxito */}
+        {success && (
+          <div className="bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 p-3 mb-4 rounded">
+            {success}
+          </div>
+        )}
+
+        {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Demandante */}
-          <div>
-            <label htmlFor="demandante_carnet" className="block text-sm font-medium text-gray-700 mb-1">
-              Carnet de Demandante
-            </label>
-            <div className="relative">
-              <UserIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />
-              <select
-                id="demandante_carnet"
-                value={demandanteCarnet}
-                onChange={(e) => setDemandanteCarnet(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Seleccione un cliente</option>
-                {clientes
-                  .filter(c => c.carnet_identidad !== demandadoCarnet)
-                  .map(cliente => (
-                    <option key={cliente.id} value={cliente.carnet_identidad}>
-                      {cliente.nombre} {cliente.apellido} - {cliente.carnet_identidad}
+
+          {/* Campos de selección */}
+          {[{
+            id: 'demandante_carnet',
+            label: 'Carnet de Demandante',
+            value: demandanteCarnet,
+            onChange: setDemandanteCarnet,
+            options: clientes.filter(c => c.carnet_identidad !== demandadoCarnet),
+            icon: <UserIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />,
+          }, {
+            id: 'demandado_carnet',
+            label: 'Carnet de Demandado',
+            value: demandadoCarnet,
+            onChange: setDemandadoCarnet,
+            options: clientes.filter(c => c.carnet_identidad !== demandanteCarnet),
+            icon: <UserIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />,
+          }, {
+            id: 'abogado_demandante_carnet',
+            label: 'Abogado Demandante',
+            value: abogadoDemandanteCarnet,
+            onChange: setAbogadoDemandanteCarnet,
+            options: abogados,
+            icon: <IdentificationIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />,
+          }, {
+            id: 'abogado_demandado_carnet',
+            label: 'Abogado Demandado',
+            value: abogadoDemandadoCarnet,
+            onChange: setAbogadoDemandadoCarnet,
+            options: abogados,
+            icon: <IdentificationIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />,
+          }, {
+            id: 'juez_carnet',
+            label: 'Juez Asignado',
+            value: juezCarnet,
+            onChange: setJuezCarnet,
+            options: jueces,
+            icon: <ScaleIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />,
+          }].map(({ id, label, value, onChange, options, icon }) => (
+            <div key={id}>
+              <label htmlFor={id} className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                {label}
+              </label>
+              <div className="relative">
+                {icon}
+                <select
+                  id={id}
+                  value={value}
+                  onChange={(e) => onChange(e.target.value)}
+                  className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                             focus:outline-none focus:ring-2 focus:ring-blue-500 
+                             bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  required
+                >
+                  <option value="">Seleccione una opción</option>
+                  {options.map((opt) => (
+                    <option key={opt.id} value={opt.carnet_identidad}>
+                      {opt.nombre} {opt.apellido} - {opt.carnet_identidad}
                     </option>
                   ))}
-              </select>
+                </select>
+              </div>
             </div>
-          </div>
+          ))}
 
-          {/* Demandado */}
+          {/* Campo de contenido */}
           <div>
-            <label htmlFor="demandado_carnet" className="block text-sm font-medium text-gray-700 mb-1">
-              Carnet de Demandado
-            </label>
-            <div className="relative">
-              <UserIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />
-              <select
-                id="demandado_carnet"
-                value={demandadoCarnet}
-                onChange={(e) => setDemandadoCarnet(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Seleccione un cliente</option>
-                {clientes
-                  .filter(c => c.carnet_identidad !== demandanteCarnet)
-                  .map(cliente => (
-                    <option key={cliente.id} value={cliente.carnet_identidad}>
-                      {cliente.nombre} {cliente.apellido} - {cliente.carnet_identidad}
-                    </option>
-                  ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Abogado Demandante */}
-          <div>
-            <label htmlFor="abogado_demandante_carnet" className="block text-sm font-medium text-gray-700 mb-1">
-              Abogado Demandante
-            </label>
-            <div className="relative">
-              <IdentificationIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />
-              <select
-                id="abogado_demandante_carnet"
-                value={abogadoDemandanteCarnet}
-                onChange={(e) => setAbogadoDemandanteCarnet(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Seleccione un abogado</option>
-                {abogados.map(abogado => (
-                  <option key={abogado.id} value={abogado.carnet_identidad}>
-                    {abogado.nombre} {abogado.apellido} - {abogado.carnet_identidad}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Abogado Demandado */}
-          <div>
-            <label htmlFor="abogado_demandado_carnet" className="block text-sm font-medium text-gray-700 mb-1">
-              Abogado Demandado
-            </label>
-            <div className="relative">
-              <IdentificationIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />
-              <select
-                id="abogado_demandado_carnet"
-                value={abogadoDemandadoCarnet}
-                onChange={(e) => setAbogadoDemandadoCarnet(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Seleccione un abogado</option>
-                {abogados.map(abogado => (
-                  <option key={abogado.id} value={abogado.carnet_identidad}>
-                    {abogado.nombre} {abogado.apellido} - {abogado.carnet_identidad}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Juez */}
-          <div>
-            <label htmlFor="juez_carnet" className="block text-sm font-medium text-gray-700 mb-1">
-              Juez Asignado
-            </label>
-            <div className="relative">
-              <ScaleIcon className="h-5 w-5 text-gray-400 absolute top-2.5 left-3" />
-              <select
-                id="juez_carnet"
-                value={juezCarnet}
-                onChange={(e) => setJuezCarnet(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Seleccione un juez</option>
-                {jueces.map(juez => (
-                  <option key={juez.id} value={juez.carnet_identidad}>
-                    {juez.nombre} {juez.apellido} - {juez.carnet_identidad}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Contenido */}
-          <div>
-            <label htmlFor="contenido" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="contenido" className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
               Contenido del Expediente
             </label>
             <div className="relative">
@@ -234,14 +205,16 @@ function ExpedienteCreate() {
                 id="contenido"
                 value={contenido}
                 onChange={(e) => setContenido(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded 
+                           focus:outline-none focus:ring-2 focus:ring-blue-500 
+                           bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 rows={4}
                 required
               />
             </div>
           </div>
 
-          {/* Botón enviar */}
+          {/* Botón de enviar */}
           <div className="text-right">
             <button
               type="submit"
