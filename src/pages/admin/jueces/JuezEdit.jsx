@@ -29,7 +29,7 @@ function JuezEdit() {
   useEffect(() => {
     const fetchJuez = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/jueces/${id}`);
+        const response = await axios.get(`http://localhost:3000/api/jueces/${id}`);
         const { nombre, apellido, carnet_identidad, email } = response.data;
         setNombre(nombre);
         setApellido(apellido);
@@ -48,7 +48,7 @@ function JuezEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/api/jueces/update/${id}`, {
+      await axios.put(`http://localhost:3000/api/jueces/update/${id}`, {
         nombre,
         apellido,
         carnet_identidad: carnetIdentidad,

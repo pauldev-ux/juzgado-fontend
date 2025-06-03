@@ -11,7 +11,7 @@ function UpdateRole() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:3001/api/update-role/', {
+      const response = await axios.post('http://localhost:3000/api/update-role/', {
         username,
         role_name: roleName,
       });

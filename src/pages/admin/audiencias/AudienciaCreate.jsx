@@ -24,7 +24,7 @@ function VistaAudienciaCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3001/api/audiencias', {
+      await axios.post('http://localhost:3000/api/audiencias', {
         fecha,
         duracion,
         ubicacion,

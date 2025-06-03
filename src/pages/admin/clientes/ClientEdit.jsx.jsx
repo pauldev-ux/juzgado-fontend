@@ -10,7 +10,7 @@ import {
   KeyIcon,
   PencilSquareIcon,
   ExclamationCircleIcon,
-  ArrowLeftCircleIcon, // ✅ Icono usado para regresar
+  ArrowLeftCircleIcon,
 } from '@heroicons/react/24/outline';
 
 function ClientEdit() {
@@ -26,50 +26,106 @@ function ClientEdit() {
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // ✅ Cargar cliente por ID
+  // 1) Al montar: comprueba token y luego carga el cliente
   useEffect(() => {
-    const fetchCliente = async () => {
-      try {
-        const response = await axios.get(`http://localhost:3001/api/clientes/${id}`);
-        setCliente(response.data);
-      } catch (err) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No autenticado. Por favor, inicia sesión.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+      return;
+    }
+    fetchCliente(token);
+  }, [id, navigate]);
+
+  // 2) Fetch del cliente por ID (con token)
+  const fetchCliente = async (token) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/clientes/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCliente(response.data);
+    } catch (err) {
+      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        setError('Sesión inválida o sin permisos. Por favor, inicia sesión nuevamente.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200);
+      } else {
         setError('Error al cargar los datos del cliente');
-        console.error(err);
       }
-    };
+      console.error(err);
+    }
+  };
 
-    fetchCliente();
-  }, [id]);
-
-  // ✅ Manejar cambios (excepto CI)
+  // 3) Manejar cambios (excepto CI)
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === 'carnet_identidad') return;
     setCliente({ ...cliente, [name]: value });
   };
 
-  // ✅ Enviar cambios
+  // 4) Enviar cambios (PUT)
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No autenticado. Por favor, inicia sesión.');
+      return;
+    }
+
     try {
-      await axios.put(`http://localhost:3001/api/clientes/update/${id}`, cliente);
+      await axios.put(
+        `http://localhost:3000/api/clientes/update/${id}`,
+        cliente,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       navigate('/clientes/list');
     } catch (err) {
-      setError('Error al actualizar el cliente');
+      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        setError('Sesión inválida o sin permisos. Por favor, inicia sesión nuevamente.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200);
+      } else {
+        setError('Error al actualizar el cliente');
+      }
       console.error(err);
     }
   };
 
-  // ✅ Regresar al dashboard
+  // 5) Botón para volver al dashboard
   const handleGoBack = () => {
     navigate('/admin/dashboard');
   };
+
+  // 6) Si el error es “No autenticado…”, mostramos solo la alerta grande
+  if (error === 'No autenticado. Por favor, inicia sesión.') {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="w-full max-w-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 px-6 py-4 rounded-lg">
+          {error}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
       <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
 
-        {/* Botón de regresar al Dashboard, ubicado arriba */}
+        {/* Botón de regresar al Dashboard */}
         <div className="mb-4">
           <button
             type="button"
@@ -88,15 +144,14 @@ function ClientEdit() {
         </h2>
 
         {/* Mostrar error */}
-        {error && (
+        {error && error !== 'No autenticado. Por favor, inicia sesión.' && (
           <div className="bg-red-100 dark:bg-red-200 text-red-700 dark:text-red-800 p-3 mb-5 rounded text-center">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-
-          {/* Campo: Nombre */}
+          {/* Nombre */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               <UserIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
@@ -112,7 +167,7 @@ function ClientEdit() {
             />
           </div>
 
-          {/* Campo: Apellido */}
+          {/* Apellido */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               <UserIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
@@ -128,7 +183,7 @@ function ClientEdit() {
             />
           </div>
 
-          {/* Campo: CI (no editable) */}
+          {/* Carnet de Identidad (no editable) */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
@@ -143,11 +198,11 @@ function ClientEdit() {
             />
             <div className="flex items-center mt-1 text-sm text-yellow-600 dark:text-yellow-400">
               <ExclamationCircleIcon className="h-5 w-5 mr-1" />
-              Este campo no se puede modificar porque es un identificador único del cliente.
+              Este campo no se puede modificar (identificador único).
             </div>
           </div>
 
-          {/* Campo: Email */}
+          {/* Correo Electrónico */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               <EnvelopeIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
@@ -163,7 +218,7 @@ function ClientEdit() {
             />
           </div>
 
-          {/* Campo: Contraseña */}
+          {/* Contraseña */}
           <div>
             <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               <KeyIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />

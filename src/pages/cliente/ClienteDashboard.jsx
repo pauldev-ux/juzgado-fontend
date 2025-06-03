@@ -24,7 +24,7 @@ function ClienteDashboard() {
 
     const fetchClienteConExpedientes = async () => {
       try {
-        const res = await axios.get(`http://localhost:3001/api/clientes/perfil/${storedUser.id}`, {
+        const res = await axios.get(`http://localhost:3000/api/clientes/perfil/${storedUser.id}`, {
           headers: {
             Authorization: `Bearer ${token}`
           }

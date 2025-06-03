@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api', // Asegúrate de que tu backend esté corriendo en este puerto y URL
+  baseURL: 'http://localhost:3000/api', // Asegúrate de que tu backend esté corriendo en este puerto y URL
 });
 
 export const loginUser = async (data) => {

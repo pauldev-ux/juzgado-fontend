@@ -15,7 +15,7 @@ function AbogadoDashboard() {
 
       if (parsedUser?.carnet_identidad) {
         axios
-          .get(`http://localhost:3001/api/expedientes/abogado/${parsedUser.carnet_identidad}`)
+          .get(`http://localhost:3000/api/expedientes/abogado/${parsedUser.carnet_identidad}`)
           .then((res) => setExpedientes(res.data))
           .catch((err) => console.error('Error al obtener expedientes del abogado:', err));
       }

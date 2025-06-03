@@ -30,7 +30,7 @@ function ExpedienteCreate() {
   useEffect(() => {
     const fetchClientes = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/expedientes/clientes');
+        const response = await axios.get('http://localhost:3000/api/expedientes/clientes');
         setClientes(response.data);
       } catch (err) {
         setError('Error al cargar los clientes');
@@ -40,7 +40,7 @@ function ExpedienteCreate() {
 
     const fetchAbogados = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/expedientes/abogados');
+        const response = await axios.get('http://localhost:3000/api/expedientes/abogados');
         setAbogados(response.data);
       } catch (err) {
         setError('Error al cargar los abogados');
@@ -50,7 +50,7 @@ function ExpedienteCreate() {
 
     const fetchJueces = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/expedientes/jueces');
+        const response = await axios.get('http://localhost:3000/api/expedientes/jueces');
         setJueces(response.data);
       } catch (err) {
         setError('Error al cargar los jueces');
@@ -67,7 +67,7 @@ function ExpedienteCreate() {
     e.preventDefault();
     try {
       // Enviar datos para crear el expediente
-      await axios.post('http://localhost:3001/api/expedientes/', {
+      await axios.post('http://localhost:3000/api/expedientes/', {
         demandante_carnet: demandanteCarnet,
         demandado_carnet: demandadoCarnet,
         abogado_demandante_carnet: abogadoDemandanteCarnet,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,28 +22,65 @@ function JuezCreate() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Manejo del envío del formulario
+  // 1) Al montar: verificamos token
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No autenticado. Por favor, inicia sesión.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    }
+  }, [navigate]);
+
+  // 2) Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No autenticado. Por favor, inicia sesión.');
+      return;
+    }
+
     try {
       // Enviamos los datos para crear el nuevo juez
-      await axios.post('http://localhost:3001/api/jueces', {
-        nombre,
-        apellido,
-        carnet_identidad: carnetIdentidad,
-        email,
-        password,
-      });
+      await axios.post(
+        'http://localhost:3000/api/jueces', 
+        {
+          nombre,
+          apellido,
+          carnet_identidad: carnetIdentidad,
+          email,
+          password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Asegúrate de enviar el token
+          },
+        }
+      );
 
-      // NUEVO: Redirige a la lista de jueces después de la creación
+      // Redirige a la lista de jueces después de la creación
       navigate('/jueces/list');
     } catch (err) {
-      setError('Error al crear el juez');
+      // Si 401/403, limpiamos y redirigimos
+      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        setError('No tienes permisos para crear jueces o token inválido.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200);
+      } else {
+        setError('Error al crear el juez');
+      }
       console.error(err);
     }
   };
 
-  // Función para manejar el regreso al dashboard
+  // 3) Función para manejar el regreso al dashboard
   const handleGoBack = () => {
     navigate('/admin/dashboard');
   };
@@ -52,7 +89,7 @@ function JuezCreate() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900 px-4">
       <div className="w-full max-w-xl bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
 
-        {/* Botón regresar al Dashboard, estilo uniforme */}
+        {/* Botón regresar al Dashboard */}
         <div className="mb-6">
           <button
             type="button"
@@ -64,7 +101,7 @@ function JuezCreate() {
           </button>
         </div>
 
-        {/* Encabezado centrado con ícono decorativo */}
+        {/* Encabezado */}
         <div className="text-center mb-6">
           <ScaleIcon className="h-10 w-10 text-blue-500 mx-auto mb-2" />
           <h1 className="text-2xl sm:text-3xl font-semibold text-gray-800 dark:text-white">Crear Juez</h1>
@@ -77,7 +114,7 @@ function JuezCreate() {
           </div>
         )}
 
-        {/* Formulario con campos estilizados y responsivos */}
+        {/* Formulario */}
         <form onSubmit={handleSubmit} className="space-y-4">
 
           {/* Campo: Nombre */}
@@ -122,7 +159,7 @@ function JuezCreate() {
               <input
                 type="text"
                 id="carnet_identidad"
-                maxLength={10} // NUEVO: límite de 10 dígitos
+                maxLength={10} 
                 placeholder="Máximo 10 dígitos"
                 value={carnetIdentidad}
                 onChange={(e) => setCarnetIdentidad(e.target.value)}
@@ -168,7 +205,7 @@ function JuezCreate() {
             </div>
           </div>
 
-          {/* Contenedor para alinear el botón a la derecha */}
+          {/* Botón para crear el juez */}
           <div className="flex justify-end">
             <button
               type="submit"

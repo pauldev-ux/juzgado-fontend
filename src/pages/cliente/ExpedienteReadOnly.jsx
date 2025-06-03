@@ -11,7 +11,7 @@ function ExpedienteReadOnly({ user }) {
     const fetchExpedientesCliente = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`http://localhost:3001/api/expedientes/cliente/${user.id_usuario}`, {
+        const response = await axios.get(`http://localhost:3000/api/expedientes/cliente/${user.id_usuario}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setExpedientes(response.data);

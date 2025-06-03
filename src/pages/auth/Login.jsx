@@ -7,7 +7,7 @@ import {
   LockOpenIcon,
   EyeIcon,
   EyeSlashIcon,
-  ScaleIcon
+  ScaleIcon,
 } from '@heroicons/react/24/outline';
 
 function Login() {
@@ -24,8 +24,8 @@ function Login() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    setUnlocked(true);
-    setMessage('Usuario autenticado correctamente');
+    setUnlocked(false);
+    setMessage('');
 
     try {
       const response = await axios.post('http://localhost:3000/api/auth/login', {
@@ -33,30 +33,37 @@ function Login() {
         password,
       });
 
+      // Si llegamos aquí, el login fue exitoso
+      setUnlocked(true);
+      setMessage('Usuario autenticado correctamente');
+
       const { token, user } = response.data;
 
+      // Guarda el token bajo la clave "token"
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
-      const roles = user?.Roles || user?.roles || [];
-      const nombresRoles = roles.map(r =>
-        r.id_rol?.toLowerCase?.() || r.nombre?.toLowerCase?.() || r.toLowerCase?.()
-      );
-
-      let ruta = '/';
-      if (nombresRoles.includes('admin') || nombresRoles.includes('administrador')) {
-        ruta = '/admin/dashboard';
-      } else if (nombresRoles.includes('juez')) {
-        ruta = '/juez/dashboard';
-      } else if (nombresRoles.includes('abogado')) {
-        ruta = '/abogado/dashboard';
-      } else if (nombresRoles.includes('cliente')) {
-        ruta = '/cliente/dashboard';
-      }
-
+      // Espera un instante para que el usuario vea el candado abierto
       setTimeout(() => {
+        const roles = user?.Roles || user?.roles || [];
+        const nombresRoles = roles.map(r =>
+          r.id_rol?.toLowerCase?.() || r.nombre?.toLowerCase?.() || r.toLowerCase?.()
+        );
+
+        let ruta = '/';
+        if (nombresRoles.includes('admin') || nombresRoles.includes('administrador')) {
+          ruta = '/admin/dashboard';
+        } else if (nombresRoles.includes('juez')) {
+          ruta = '/juez/dashboard';
+        } else if (nombresRoles.includes('abogado')) {
+          ruta = '/abogado/dashboard';
+        } else if (nombresRoles.includes('cliente')) {
+          ruta = '/cliente/dashboard';
+        }
+
+        setLoading(false);
         navigate(ruta);
-      }, 2000);
+      }, 1000);
     } catch (err) {
       const msg = err.response?.data?.error || 'Error desconocido';
       setError(msg);
@@ -74,7 +81,7 @@ function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-gray-100 to-blue-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300 px-4">
       <div className="w-full max-w-md bg-white dark:bg-gray-800 shadow-xl rounded-lg pt-6 pb-8 px-8 min-h-[500px] flex flex-col justify-center items-center transition-all duration-300 relative overflow-hidden">
         {loading ? (
-          <div className="flex flex-col items-center justify-center h-full animate-fade-in">
+          <div className="flex flex-col items-center justify-center h-full">
             <div className="w-28 h-28 rounded-full border-4 border-yellow-400 flex items-center justify-center bg-yellow-100 dark:bg-yellow-500 shadow-lg animate-spin">
               <ScaleIcon className="w-12 h-12 text-yellow-700 dark:text-white" />
             </div>
@@ -111,7 +118,10 @@ function Login() {
 
             <form onSubmit={handleSubmit} className="space-y-6 w-full">
               <div>
-                <label htmlFor="correo" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="correo"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Correo Electrónico
                 </label>
                 <div className="relative">
@@ -129,7 +139,10 @@ function Login() {
               </div>
 
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
                   Contraseña
                 </label>
                 <div className="relative">
@@ -140,6 +153,7 @@ function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
+                    minLength={6}
                     className="w-full pl-10 pr-10 py-2 border border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:ring-blue-500 focus:border-blue-500"
                     placeholder="********"
                   />
@@ -164,7 +178,9 @@ function Login() {
               </button>
 
               <div className="text-center mt-4">
-                <span className="text-sm text-gray-600 dark:text-gray-300">¿No tienes una cuenta?</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  ¿No tienes una cuenta?
+                </span>
                 <button
                   type="button"
                   onClick={handleRegisterRedirect}

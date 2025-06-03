@@ -29,9 +29,9 @@ function ExpedienteEdit() {
       try {
         // Cargar listas de selección
         const [clientesRes, abogadosRes, juecesRes] = await Promise.all([
-          axios.get('http://localhost:3001/api/clientes/'),
-          axios.get('http://localhost:3001/api/abogados/'),
-          axios.get('http://localhost:3001/api/jueces/'),
+          axios.get('http://localhost:3000/api/clientes/'),
+          axios.get('http://localhost:3000/api/abogados/'),
+          axios.get('http://localhost:3000/api/jueces/'),
         ]);
 
         setClientes(clientesRes.data);
@@ -39,7 +39,7 @@ function ExpedienteEdit() {
         setJueces(juecesRes.data);
 
         // Luego cargar el expediente
-        const expedienteRes = await axios.get(`http://localhost:3001/api/expedientes/${id}`);
+        const expedienteRes = await axios.get(`http://localhost:3000/api/expedientes/${id}`);
         const {
           demandante_carnet,
           demandado_carnet,
@@ -68,7 +68,7 @@ function ExpedienteEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/api/expedientes/update/${id}`, {
+      await axios.put(`http://localhost:3000/api/expedientes/update/${id}`, {
         demandante_carnet: demandanteCarnet,
         demandado_carnet: demandadoCarnet,
         abogado_demandante_carnet: abogadoDemandanteCarnet,

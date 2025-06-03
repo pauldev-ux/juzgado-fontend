@@ -3,8 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
-// Importar íconos de Heroicons
-import { ScaleIcon, PencilSquareIcon, TrashIcon, PlusIcon, HomeIcon } from '@heroicons/react/24/outline'; // <-- NUEVO: importación de PlusIcon y HomeIcon
+import { ScaleIcon, PencilSquareIcon, TrashIcon, PlusIcon, HomeIcon } from '@heroicons/react/24/outline';
 
 function JuezList() {
   const [jueces, setJueces] = useState([]);
@@ -12,10 +11,9 @@ function JuezList() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Obtener jueces desde la API
     const fetchJueces = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/jueces/');
+        const response = await axios.get('http://localhost:3000/api/jueces');
         setJueces(response.data);
       } catch (err) {
         setError('Error al cargar los jueces');
@@ -29,7 +27,7 @@ function JuezList() {
   // Eliminar juez
   const handleDelete = async (juezId) => {
     try {
-      const response = await axios.delete(`http://localhost:3001/api/jueces/delete/${juezId}`);
+      const response = await axios.delete(`http://localhost:3000/api/jueces/delete/${juezId}`);
       if (response.status === 200) {
         setJueces(jueces.filter((juez) => juez.id !== juezId));
       }
@@ -39,15 +37,15 @@ function JuezList() {
     }
   };
 
-  // Filtro por nombre
+  // Filtrado por nombre
   const filteredJueces = jueces.filter((juez) =>
     juez.nombre.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 px-4 sm:px-8 py-8"> {/* <-- MODO OSCURO habilitado */}
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 px-4 sm:px-8 py-8">
 
-      {/* NUEVO: Botón Home en la esquina superior izquierda */}
+      {/* Botón Home */}
       <div className="absolute top-4 left-4">
         <Link
           to="/admin/dashboard"
@@ -57,7 +55,7 @@ function JuezList() {
         </Link>
       </div>
 
-      {/* Título con ícono */}
+      {/* Título */}
       <div className="flex items-center justify-center mb-8">
         <ScaleIcon className="h-8 w-8 text-indigo-600 mr-2 dark:text-indigo-400" />
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white">Lista de Jueces</h1>
@@ -72,18 +70,16 @@ function JuezList() {
 
       {/* Campo de búsqueda */}
       <div className="mb-6 w-full overflow-x-auto">
-        <div className="min-w-[700px] max-w-full mx-auto">
-          <input
-            type="text"
-            placeholder="Buscar por nombre..."
-            className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-gray-800 dark:text-white"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Buscar por nombre..."
+          className="w-full p-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-400 dark:bg-gray-800 dark:text-white"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
-      {/* Tabla responsive */}
+      {/* Tabla */}
       <div className="bg-white dark:bg-gray-800 shadow-xl rounded-xl overflow-x-auto">
         <table className="w-full min-w-[700px] text-sm text-gray-700 dark:text-gray-300">
           <thead className="bg-gray-50 dark:bg-gray-700 border-b">
@@ -115,7 +111,7 @@ function JuezList() {
                     <PencilSquareIcon className="w-4 h-4 mr-1" />
                     Editar
                   </Link>
-                  
+
                   {/* Botón Eliminar */}
                   <button
                     onClick={() => handleDelete(juez.id)}
@@ -125,12 +121,13 @@ function JuezList() {
                     Eliminar
                   </button>
 
-                  {/* NUEVO: Botón Crear Juez con "+" */}
+                  {/* Botón Crear */}
                   <Link
                     to="/jueces/create"
                     className="inline-flex items-center px-3 py-1.5 bg-green-100 text-green-600 text-xs font-medium rounded-full hover:bg-green-200 transition dark:bg-green-700 dark:text-green-200 dark:hover:bg-green-600"
                   >
                     <PlusIcon className="w-4 h-4 mr-1" />
+                    Crear
                   </Link>
                 </td>
               </tr>

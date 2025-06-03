@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+// src/pages/abogados/AbogadoCreate.jsx
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import {
   UserIcon,
@@ -8,7 +9,7 @@ import {
   EnvelopeIcon,
   LockClosedIcon,
   BriefcaseIcon,
-  ArrowLeftCircleIcon, // NUEVO: icono de regresar al dashboard
+  ArrowLeftCircleIcon,
 } from '@heroicons/react/24/outline';
 
 function AbogadoCreate() {
@@ -18,35 +19,87 @@ function AbogadoCreate() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+
   const navigate = useNavigate();
 
+  // 1) Al montar: verificamos token
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No autenticado. Por favor, inicia sesión.');
+      setTimeout(() => {
+        navigate('/login');
+      }, 1500);
+    }
+  }, [navigate]);
+
+  // 2) Envío del formulario
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError('No autenticado. Por favor, inicia sesión.');
+      return;
+    }
+
     try {
-      await axios.post('http://localhost:3001/api/abogados', {
-        nombre,
-        apellido,
-        carnet_identidad: carnetIdentidad,
-        email,
-        password,
-      });
+      await axios.post(
+        'http://localhost:3000/api/abogados',
+        {
+          nombre,
+          apellido,
+          carnet_identidad: carnetIdentidad,
+          email,
+          password,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
       navigate('/abogados/list');
     } catch (err) {
-      setError('Error al crear el abogado');
+      // Si 401/403, limpiamos y redirigimos
+      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
+        setError('No tienes permisos para crear abogados o token inválido.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        setTimeout(() => {
+          navigate('/login');
+        }, 1200);
+      } else {
+        setError('Error al crear el abogado');
+      }
       console.error(err);
     }
   };
 
-  // NUEVO: función para manejar el regreso al dashboard
+  // 3) Botón “Regresar”
   const handleGoBack = () => {
     navigate('/admin/dashboard');
   };
 
+  // Si estamos en estado “no autenticado” mostramos solo ese mensaje
+  if (error === 'No autenticado. Por favor, inicia sesión.') {
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
+        <div className="w-full max-w-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 px-6 py-4 rounded-lg">
+          {error}
+        </div>
+      </div>
+    );
+  }
+
+  // Formulario normal (si no es “no autenticado…”)
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 dark:bg-gray-900 px-4">
       <div className="w-full max-w-xl bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg">
 
-        {/* Botón regresar al Dashboard, estilo uniforme */}
+        {/* Botón regresar al Dashboard */}
         <div className="mb-6">
           <button
             type="button"
@@ -64,8 +117,8 @@ function AbogadoCreate() {
           <h1 className="text-3xl font-semibold text-gray-800 dark:text-white">Crear Abogado</h1>
         </div>
 
-        {/* Error */}
-        {error && (
+        {/* Error genérico */}
+        {error && error !== 'No autenticado. Por favor, inicia sesión.' && (
           <div className="bg-red-100 dark:bg-red-200 text-red-700 dark:text-red-800 px-4 py-2 mb-4 rounded text-center shadow">
             {error}
           </div>
@@ -109,7 +162,7 @@ function AbogadoCreate() {
             </div>
           </div>
 
-          {/* Carnet Identidad */}
+          {/* Carnet de Identidad */}
           <div>
             <label htmlFor="carnet_identidad" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Carnet de Identidad
@@ -129,7 +182,7 @@ function AbogadoCreate() {
             </div>
           </div>
 
-          {/* Email */}
+          {/* Correo */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Correo
@@ -165,7 +218,7 @@ function AbogadoCreate() {
             </div>
           </div>
 
-          {/* Contenedor para el botón con flex */}
+          {/* Botón */}
           <div className="flex justify-end">
             <button
               type="submit"

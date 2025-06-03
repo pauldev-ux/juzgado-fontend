@@ -11,7 +11,7 @@ function ExpedienteList() {
   useEffect(() => {
     const fetchExpedientes = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/api/expedientes/');
+        const response = await axios.get('http://localhost:3000/api/expedientes/');
         setExpedientes(response.data);
       } catch (err) {
         setError('Error al cargar los expedientes');
@@ -23,7 +23,7 @@ function ExpedienteList() {
 
   const handleDelete = async (expedienteId) => {
     try {
-      const response = await axios.delete(`http://localhost:3001/api/expedientes/delete/${expedienteId}`);
+      const response = await axios.delete(`http://localhost:3000/api/expedientes/delete/${expedienteId}`);
       if (response.status === 200) {
         setExpedientes(expedientes.filter((exp) => exp.numero_expediente !== expedienteId));
       }

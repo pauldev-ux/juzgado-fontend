@@ -14,7 +14,7 @@ function JuezDashboard() {
 
       if (parsedUser?.carnet_identidad) {
         axios
-          .get(`http://localhost:3001/api/expedientes/juez/${parsedUser.carnet_identidad}`)
+          .get(`http://localhost:3000/api/expedientes/juez/${parsedUser.carnet_identidad}`)
           .then((res) => setExpedientes(res.data))
           .catch((err) => console.error('Error al cargar expedientes del juez:', err));
       }

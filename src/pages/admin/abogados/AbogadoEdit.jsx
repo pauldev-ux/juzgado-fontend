@@ -30,7 +30,7 @@ function AbogadoEdit() {
   useEffect(() => {
     const fetchAbogado = async () => {
       try {
-        const response = await axios.get(`http://localhost:3001/api/abogados/${id}`);
+        const response = await axios.get(`http://localhost:3000/api/abogados/${id}`);
         setAbogado(response.data);
       } catch (err) {
         setError('Error al cargar los datos del abogado');
@@ -52,7 +52,7 @@ function AbogadoEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:3001/api/abogados/update/${id}`, abogado);
+      await axios.put(`http://localhost:3000/api/abogados/update/${id}`, abogado);
       navigate('/abogados/list');
     } catch (err) {
       setError('Error al actualizar el abogado');
