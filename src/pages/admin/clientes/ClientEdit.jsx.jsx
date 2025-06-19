@@ -1,248 +1,176 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-
-// Iconos
 import {
-  UserIcon,
-  IdentificationIcon,
-  EnvelopeIcon,
-  KeyIcon,
-  PencilSquareIcon,
-  ExclamationCircleIcon,
-  ArrowLeftCircleIcon,
+  UserIcon, EnvelopeIcon, LockClosedIcon,
+  PhoneIcon, MapIcon, MapPinIcon, CursorArrowRaysIcon, AdjustmentsHorizontalIcon,
+  ArrowLeftCircleIcon, UserCircleIcon
 } from '@heroicons/react/24/outline';
 
-function ClientEdit() {
-  const [cliente, setCliente] = useState({
-    nombre: '',
-    apellido: '',
-    carnet_identidad: '',
-    email: '',
-    password: '',
-  });
+const departamentos = [
+  "La Paz", "Cochabamba", "Santa Cruz", "Oruro", "Potosí",
+  "Chuquisaca", "Tarija", "Beni", "Pando"
+];
 
+const codigosPostales = [
+  { codigo: "0101", nombre: "La Paz" },
+  { codigo: "0201", nombre: "Cochabamba" },
+  { codigo: "0301", nombre: "Santa Cruz" },
+  { codigo: "0401", nombre: "Oruro" },
+  { codigo: "0501", nombre: "Potosí" },
+  { codigo: "0601", nombre: "Chuquisaca" },
+  { codigo: "0701", nombre: "Tarija" },
+  { codigo: "0801", nombre: "Beni" },
+  { codigo: "0901", nombre: "Pando" }
+];
+
+function ClientEdit() {
+  const [form, setForm] = useState({
+    nombre: '', apellido: '', email: '', password: '',
+    telefono: '', calle: '', ciudad: '', codigo_postal: '', estado_usuario: 'Activo'
+  });
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // 1) Al montar: comprueba token y luego carga el cliente
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
       setError('No autenticado. Por favor, inicia sesión.');
-      setTimeout(() => {
-        navigate('/login');
-      }, 1500);
+      setTimeout(() => navigate('/login'), 1500);
       return;
     }
-    fetchCliente(token);
-  }, [id, navigate]);
 
-  // 2) Fetch del cliente por ID (con token)
-  const fetchCliente = async (token) => {
-    try {
-      const response = await axios.get(`http://localhost:3000/api/clientes/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setCliente(response.data);
-    } catch (err) {
-      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-        setError('Sesión inválida o sin permisos. Por favor, inicia sesión nuevamente.');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setTimeout(() => {
-          navigate('/login');
-        }, 1200);
-      } else {
+    const fetchCliente = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/clientes/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = response.data;
+        setForm({
+          nombre: data.nombre || '',
+          apellido: data.apellido || '',
+          email: data.email || '',
+          password: '',
+          telefono: data.telefono?.replace('+591 ', '') || '',
+          calle: data.calle || '',
+          ciudad: data.ciudad || '',
+          codigo_postal: data.codigo_postal || '',
+          estado_usuario: data.estado_usuario || 'Activo'
+        });
+      } catch (err) {
+        console.error(err);
         setError('Error al cargar los datos del cliente');
       }
-      console.error(err);
+    };
+
+    fetchCliente(); // ✅ Se llama aquí directamente
+  }, [id, navigate]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    if (name === 'telefono') {
+      const clean = value.replace(/\D/g, '').slice(0, 8);
+      setForm((prev) => ({ ...prev, telefono: clean }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  // 3) Manejar cambios (excepto CI)
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    if (name === 'carnet_identidad') return;
-    setCliente({ ...cliente, [name]: value });
-  };
-
-  // 4) Enviar cambios (PUT)
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem('token');
-    if (!token) {
-      setError('No autenticado. Por favor, inicia sesión.');
-      return;
-    }
-
+    const payload = {
+      ...form,
+      telefono: form.telefono ? `+591 ${form.telefono}` : null
+    };
     try {
-      await axios.put(
-        `http://localhost:3000/api/clientes/update/${id}`,
-        cliente,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axios.put(`http://localhost:3000/api/clientes/${id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       navigate('/clientes/list');
     } catch (err) {
-      if (err.response && (err.response.status === 401 || err.response.status === 403)) {
-        setError('Sesión inválida o sin permisos. Por favor, inicia sesión nuevamente.');
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        setTimeout(() => {
-          navigate('/login');
-        }, 1200);
-      } else {
-        setError('Error al actualizar el cliente');
-      }
       console.error(err);
+      setError('Error al actualizar el cliente');
     }
   };
 
-  // 5) Botón para volver al dashboard
-  const handleGoBack = () => {
-    navigate('/admin/dashboard');
-  };
-
-  // 6) Si el error es “No autenticado…”, mostramos solo la alerta grande
-  if (error === 'No autenticado. Por favor, inicia sesión.') {
-    return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
-        <div className="w-full max-w-lg bg-red-100 dark:bg-red-800 text-red-700 dark:text-red-200 px-6 py-4 rounded-lg">
-          {error}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100 dark:bg-gray-900 p-4">
-      <div className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+    <div className="min-h-screen bg-[#F1DFC4] dark:bg-gray-900 py-8 px-4">
+      <div className="max-w-3xl mx-auto bg-white dark:bg-[#3B2A2F] rounded-2xl shadow p-8">
+        <button onClick={() => navigate('/clientes/list')} className="flex items-center text-blue-600 dark:text-blue-300 mb-6">
+          <ArrowLeftCircleIcon className="w-5 h-5 mr-2" /> Volver a la lista
+        </button>
 
-        {/* Botón de regresar al Dashboard */}
-        <div className="mb-4">
-          <button
-            type="button"
-            onClick={handleGoBack}
-            className="flex items-center gap-2 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 transition"
-          >
-            <ArrowLeftCircleIcon className="h-6 w-6" />
-            Regresar al Dashboard
-          </button>
+        <div className="text-center mb-6">
+          <UserCircleIcon className="h-10 w-10 text-blue-600 dark:text-blue-300 mx-auto mb-2" />
+          <h2 className="text-3xl font-bold text-[#3B2A2F] dark:text-[#F1DFC4]">Editar Cliente</h2>
         </div>
 
-        {/* Título */}
-        <h2 className="text-3xl font-bold mb-8 text-center text-blue-700 dark:text-blue-400 flex items-center justify-center gap-2">
-          <PencilSquareIcon className="h-8 w-8 text-blue-600 dark:text-blue-400" />
-          Editar Cliente
-        </h2>
-
-        {/* Mostrar error */}
-        {error && error !== 'No autenticado. Por favor, inicia sesión.' && (
-          <div className="bg-red-100 dark:bg-red-200 text-red-700 dark:text-red-800 p-3 mb-5 rounded text-center">
-            {error}
-          </div>
+        {error && (
+          <div className="bg-red-100 text-red-700 p-3 rounded mb-4 dark:bg-red-800 dark:text-red-200">{error}</div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Nombre */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              <UserIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
-              Nombre
-            </label>
-            <input
-              type="text"
-              name="nombre"
-              value={cliente.nombre}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-              required
-            />
-          </div>
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CampoTexto label="Nombre" name="nombre" value={form.nombre} onChange={handleChange} Icon={UserIcon} required />
+          <CampoTexto label="Apellido" name="apellido" value={form.apellido} onChange={handleChange} Icon={UserIcon} required />
+          <CampoTexto label="Correo" name="email" value={form.email} onChange={handleChange} Icon={EnvelopeIcon} type="email" required />
+          <CampoTexto label="Contraseña" name="password" value={form.password} onChange={handleChange} Icon={LockClosedIcon} type="password" required />
+          <CampoTexto label="Teléfono" name="telefono" value={form.telefono} onChange={handleChange} Icon={PhoneIcon} placeholder="+591" />
+          <CampoTexto label="Calle" name="calle" value={form.calle} onChange={handleChange} Icon={MapIcon} />
+          <CampoSelect label="Ciudad" name="ciudad" value={form.ciudad} onChange={handleChange} Icon={MapPinIcon} options={departamentos} required />
+          <CampoSelect label="Código Postal" name="codigo_postal" value={form.codigo_postal} onChange={handleChange} Icon={CursorArrowRaysIcon} options={codigosPostales.map(cp => `${cp.codigo} - ${cp.nombre}`)} required />
+          <CampoSelect label="Estado" name="estado_usuario" value={form.estado_usuario} onChange={handleChange} Icon={AdjustmentsHorizontalIcon} options={["Activo", "Inactivo"]} required />
 
-          {/* Apellido */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              <UserIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
-              Apellido
-            </label>
-            <input
-              type="text"
-              name="apellido"
-              value={cliente.apellido}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-              required
-            />
+          <div className="md:col-span-2 text-right mt-4">
+            <button type="submit" className="bg-blue-700 hover:bg-blue-800 text-white font-bold px-6 py-2 rounded shadow">
+              Guardar Cambios
+            </button>
           </div>
-
-          {/* Carnet de Identidad (no editable) */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              <IdentificationIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
-              Carnet de Identidad
-            </label>
-            <input
-              type="text"
-              name="carnet_identidad"
-              value={cliente.carnet_identidad}
-              readOnly
-              className="w-full p-3 border border-gray-200 bg-gray-100 text-gray-500 rounded-lg cursor-not-allowed dark:bg-gray-600 dark:text-gray-400 dark:border-gray-500"
-            />
-            <div className="flex items-center mt-1 text-sm text-yellow-600 dark:text-yellow-400">
-              <ExclamationCircleIcon className="h-5 w-5 mr-1" />
-              Este campo no se puede modificar (identificador único).
-            </div>
-          </div>
-
-          {/* Correo Electrónico */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              <EnvelopeIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
-              Correo Electrónico
-            </label>
-            <input
-              type="email"
-              name="email"
-              value={cliente.email}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-              required
-            />
-          </div>
-
-          {/* Contraseña */}
-          <div>
-            <label className="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              <KeyIcon className="h-5 w-5 mr-2 text-blue-500 dark:text-blue-400" />
-              Contraseña
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={cliente.password}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600"
-              required
-            />
-          </div>
-
-          {/* Botón: Guardar Cambios */}
-          <button
-            type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition dark:bg-blue-500 dark:hover:bg-blue-600"
-          >
-            <PencilSquareIcon className="h-5 w-5" />
-            Guardar Cambios
-          </button>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function CampoTexto({ label, name, value, onChange, Icon, type = 'text', placeholder, required }) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-[#3B2A2F] dark:text-[#F1DFC4] mb-1">{label}</label>
+      <div className="relative">
+        {Icon && <Icon className="h-5 w-5 text-[#3B2A2F] dark:text-[#F1DFC4] absolute top-2.5 left-3" />}
+        <input
+          type={type}
+          name={name}
+          value={value}
+          onChange={onChange}
+          placeholder={placeholder}
+          className="w-full pl-10 pr-3 py-2 border border-[#3B2A2F] rounded bg-[#F1DFC4] dark:bg-[#4e3a40] text-[#3B2A2F] dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required={required}
+        />
+      </div>
+    </div>
+  );
+}
+
+function CampoSelect({ label, name, value, onChange, Icon, options, required }) {
+  return (
+    <div>
+      <label className="block text-sm font-semibold text-[#3B2A2F] dark:text-[#F1DFC4] mb-1">{label}</label>
+      <div className="relative">
+        {Icon && <Icon className="h-5 w-5 text-[#3B2A2F] dark:text-[#F1DFC4] absolute top-2.5 left-3" />}
+        <select
+          name={name}
+          value={value}
+          onChange={onChange}
+          className="w-full pl-10 pr-3 py-2 border border-[#3B2A2F] rounded bg-[#F1DFC4] dark:bg-[#4e3a40] text-[#3B2A2F] dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required={required}
+        >
+          <option value="">Seleccione una opción</option>
+          {options.map((opt) => (
+            <option key={opt} value={opt}>{opt}</option>
+          ))}
+        </select>
       </div>
     </div>
   );

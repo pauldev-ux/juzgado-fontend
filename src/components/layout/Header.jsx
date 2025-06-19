@@ -48,8 +48,7 @@ function Header() {
   };
 
   return (
-    // 🆕 🎨 Azul más oscuro en modo claro, gris muy oscuro en modo oscuro
-    <header className="bg-blue-700 dark:bg-gray-900 text-white shadow-md w-full z-50 transition-colors">
+    <header className="bg-[#3B2A2F] dark:bg-gray-900 text-white shadow-md w-full z-50 transition-colors">
       <div className="max-w-7xl mx-auto px-4 py-4 grid grid-cols-3 items-center">
         <div></div>
 
@@ -59,23 +58,21 @@ function Header() {
 
         <div className="flex justify-end items-center space-x-4">
           <div className="hidden md:flex space-x-4">
-            {/* 🎨 Botones centrados, azul oscuro en claro, gris oscuro en oscuro */}
             <Link
               to="/features"
-              className="flex items-center justify-center px-4 py-2 text-base font-semibold text-center rounded-md border border-blue-800 bg-blue-700 dark:border-gray-700 dark:bg-gray-800 hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors min-w-[120px]"
+              className="flex items-center justify-center px-4 py-2 text-base font-semibold text-center text-black rounded-md border border-[#E8D9C1] bg-[#E8D9C1] dark:border-gray-700 dark:bg-gray-800 dark:text-white hover:opacity-90 transition-colors min-w-[120px]"
             >
               Características
             </Link>
 
             <Link
               to="/support"
-              className="flex items-center justify-center px-4 py-2 text-base font-semibold text-center rounded-md border border-blue-800 bg-blue-700 dark:border-gray-700 dark:bg-gray-800 hover:bg-blue-600 dark:hover:bg-gray-700 transition-colors min-w-[120px]"
+              className="flex items-center justify-center px-4 py-2 text-base font-semibold text-center text-black rounded-md border border-[#E8D9C1] bg-[#E8D9C1] dark:border-gray-700 dark:bg-gray-800 dark:text-white hover:opacity-90 transition-colors min-w-[120px]"
             >
               Soporte
             </Link>
 
             {!hideLogout && (
-              // 🔴 Botón rojo claro en claro, rojo oscuro en modo oscuro
               <button
                 onClick={handleLogout}
                 className="flex items-center justify-center px-4 py-2 text-base font-semibold text-center text-white rounded-md border border-red-700 bg-red-600 dark:bg-red-700 hover:bg-red-500 dark:hover:bg-red-600 transition-colors min-w-[120px] whitespace-nowrap"
@@ -85,7 +82,6 @@ function Header() {
             )}
           </div>
 
-          {/* 🌙☀️ Botón de cambio de modo oscuro */}
           <button
             onClick={toggleDarkMode}
             className="p-2 rounded-full bg-gray-700 dark:bg-gray-800 text-white hover:bg-gray-600 dark:hover:bg-gray-700 transition-colors"
@@ -97,7 +93,6 @@ function Header() {
             )}
           </button>
 
-          {/* 📱 Menú hamburguesa para móviles */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden focus:outline-none"
@@ -111,17 +106,25 @@ function Header() {
         </div>
       </div>
 
-      {/* 📱 Menú desplegable móvil con tonos adaptados */}
       {isMobileMenuOpen && (
-        <div className="md:hidden px-4 pb-4 space-y-2 bg-blue-700 dark:bg-gray-900">
-          <Link to="/features" className="block px-4 py-2 text-base font-semibold text-center rounded-md border border-blue-800 bg-blue-700 dark:border-gray-700 dark:bg-gray-800 hover:bg-blue-600 dark:hover:bg-gray-700">
+        <div className="md:hidden px-4 pb-4 space-y-2 bg-[#3B2A2F] dark:bg-gray-900">
+          <Link
+            to="/features"
+            className="block px-4 py-2 text-base font-semibold text-center rounded-md border border-[#E8D9C1] bg-[#E8D9C1] text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white hover:opacity-90"
+          >
             Características
           </Link>
-          <Link to="/support" className="block px-4 py-2 text-base font-semibold text-center rounded-md border border-blue-800 bg-blue-700 dark:border-gray-700 dark:bg-gray-800 hover:bg-blue-600 dark:hover:bg-gray-700">
+          <Link
+            to="/support"
+            className="block px-4 py-2 text-base font-semibold text-center rounded-md border border-[#E8D9C1] bg-[#E8D9C1] text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white hover:opacity-90"
+          >
             Soporte
           </Link>
           {!hideLogout && (
-            <button onClick={handleLogout} className="block px-4 py-2 text-base font-semibold text-center text-white rounded-md border border-red-700 bg-red-600 dark:bg-red-700 hover:bg-red-500 dark:hover:bg-red-600">
+            <button
+              onClick={handleLogout}
+              className="block px-4 py-2 text-base font-semibold text-center text-white rounded-md border border-red-700 bg-red-600 dark:bg-red-700 hover:bg-red-500 dark:hover:bg-red-600"
+            >
               Cerrar sesión
             </button>
           )}

@@ -1,16 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-
-// Iconos de Heroicons
 import {
   HomeIcon,
   FolderIcon,
   UsersIcon,
   BriefcaseIcon,
   ScaleIcon,
-  CalendarDaysIcon,
-  ClipboardDocumentListIcon,
-  PuzzlePieceIcon
+  CalendarDaysIcon
 } from '@heroicons/react/24/outline';
 
 function Sidebar() {
@@ -19,7 +15,7 @@ function Sidebar() {
 
   return (
     <div
-      className={`bg-blue-700 dark:bg-gray-900 text-white h-screen transition-all duration-150 ease-in-out ${
+      className={`bg-[#5A3F47] dark:bg-gray-900 text-white h-screen transition-all duration-150 ease-in-out ${
         isOpen ? 'w-64' : 'w-20'
       } fixed top-0 left-0 z-40 shadow-lg`}
     >
@@ -39,11 +35,11 @@ function Sidebar() {
         </button>
       </div>
 
-      {/* Título */}
-      <div className="px-6 h-8 mb-6 flex items-center">
-        <span className={`text-xl font-bold transform transition-all duration-200 ease-in-out ${isOpen ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-2 pointer-events-none select-none'}`}>
-          <Link to="/">Juzgado SC</Link>
-        </span>
+      {/* Logo con fondo beige y libra color header */}
+      <div className="px-6 h-14 mb-6 flex items-center justify-center">
+        <Link to="/" className="bg-[#E8D9C1] p-3 rounded-full shadow-md">
+          <ScaleIcon className="h-8 w-8 text-[#3B2A2F]" />
+        </Link>
       </div>
 
       {/* Navegación */}
@@ -56,7 +52,6 @@ function Sidebar() {
           setIsOpen={setIsOpen}
         />
 
-        {/* Expedientes */}
         <SidebarDropdown
           label="Expedientes"
           icon={<FolderIcon className="h-5 w-5" />}
@@ -73,7 +68,6 @@ function Sidebar() {
           ]}
         />
 
-        {/* Clientes */}
         <SidebarDropdown
           label="Clientes"
           icon={<UsersIcon className="h-5 w-5" />}
@@ -88,7 +82,6 @@ function Sidebar() {
           ]}
         />
 
-        {/* Abogados */}
         <SidebarDropdown
           label="Abogados"
           icon={<BriefcaseIcon className="h-5 w-5" />}
@@ -103,7 +96,6 @@ function Sidebar() {
           ]}
         />
 
-        {/* Jueces */}
         <SidebarDropdown
           label="Jueces"
           icon={<ScaleIcon className="h-5 w-5" />}
@@ -118,7 +110,6 @@ function Sidebar() {
           ]}
         />
 
-        {/* Audiencias */}
         <SidebarDropdown
           label="Audiencias"
           icon={<CalendarDaysIcon className="h-5 w-5" />}
@@ -140,7 +131,6 @@ function Sidebar() {
   );
 }
 
-// Enlace directo
 function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
   const handleClick = () => {
     if (!isOpen) setIsOpen(true);
@@ -150,7 +140,7 @@ function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
     <Link
       to={to}
       onClick={handleClick}
-      className="flex items-center space-x-3 px-4 py-2 rounded hover:bg-blue-800 dark:hover:bg-gray-800 transition-colors"
+      className="flex items-center space-x-3 px-4 py-2 rounded hover:bg-[#3B2A2F] dark:hover:bg-gray-800 transition-colors"
     >
       {icon}
       {isOpen && <span>{label}</span>}
@@ -158,7 +148,6 @@ function SidebarLink({ to, icon, label, isOpen, setIsOpen }) {
   );
 }
 
-// Dropdown con subrutas
 function SidebarDropdown({
   label,
   icon,
@@ -188,7 +177,7 @@ function SidebarDropdown({
       <button
         onClick={handleExpand}
         type="button"
-        className="flex items-center w-full space-x-3 px-4 py-2 rounded hover:bg-blue-800 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+        className="flex items-center w-full space-x-3 px-4 py-2 rounded hover:bg-[#3B2A2F] dark:hover:bg-gray-800 transition-colors focus:outline-none"
       >
         {icon}
         {isOpen && <span className="flex-1 text-left">{label}</span>}

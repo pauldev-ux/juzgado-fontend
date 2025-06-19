@@ -14,14 +14,14 @@ function Dashboard() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-r from-gray-100 to-blue-50 dark:from-gray-800 dark:to-gray-900 transition-colors duration-300">
+    <div className="flex min-h-screen bg-[#E8D9C1] dark:bg-gray-900 transition-colors duration-300">
       {/* Sidebar lateral */}
       <Sidebar />
 
       {/* Contenido principal */}
-      <main className="flex-1 p-8 flex flex-col items-center justify-start bg-white dark:bg-gray-800 shadow-lg rounded-lg transition-all duration-300">
+      <main className="flex-1 p-8 flex flex-col items-center justify-start bg-[#E8D9C1] dark:bg-gray-800 shadow-lg rounded-lg transition-all duration-300">
         {/* Panel principal */}
-        <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg w-full max-w-4xl p-8 transition-all duration-300">
+        <div className="bg-[#E8D9C1] dark:bg-gray-700 shadow-lg rounded-lg w-full max-w-4xl p-8 transition-all duration-300">
           <div className="flex items-center justify-center mb-6">
             <AcademicCapIcon className="w-10 h-10 text-blue-500 mr-2 dark:text-blue-300" />
             <h1 className="text-3xl font-bold text-gray-800 text-center dark:text-white">
